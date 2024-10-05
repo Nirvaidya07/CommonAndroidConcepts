@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Interview"
+rootProject.name = "CommonConcepts"
 include(":app")
  

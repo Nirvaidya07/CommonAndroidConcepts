@@ -1,6 +1,6 @@
 package com.nirali.sample.recipe.domain.repository
 
-import com.nirali.interview.domain.model.BreedResponse
+import com.nirali.dogBreed.domain.model.BreedResponse
 import com.nirali.sample.recipe.components.Resource
 import com.nirali.sample.recipe.domain.model.Data
 

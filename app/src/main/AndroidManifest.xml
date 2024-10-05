@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="com.nirali.interview_api_call.MainActivity"
+            android:name="com.nirali.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Interview">

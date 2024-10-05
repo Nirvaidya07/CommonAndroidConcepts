@@ -1,6 +1,6 @@
 package com.nirali.sample.recipe.data.remote
 
-import com.nirali.interview.domain.model.BreedResponse
+import com.nirali.dogBreed.domain.model.BreedResponse
 import retrofit2.Response
 import retrofit2.http.GET
 

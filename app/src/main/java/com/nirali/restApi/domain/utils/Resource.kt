@@ -1,10 +1,4 @@
-/**Created By Nirali Pandya
- * Date :2024-10-05
- * Time :12:39 p.m.
- * Project Name :Interview
- *
- */
-package com.nirali.sample.recipe.components
+package com.nirali.restApi.domain.utils
 
 import android.util.Log
 import kotlinx.serialization.Serializable
@@ -20,15 +14,16 @@ sealed class Resource<T>(
     val message: String? = null,
     val code: Int? = null
 ) {
-
     class Success<T>(data: T?) : Resource<T>(data)
-    class Error<T>(message: String, data: T? = null) : Resource<T>(data, message)
+    class Error<T>(message: String, code: Int? = null, data: T? = null) :
+        Resource<T>(data, message, code)
+
     class Loading<T> : Resource<T>()
-
-
 }
+
+
 @Serializable
-data class ErrorResponse1(
+data class ErrorResponse(
     val success: Boolean,
     val message: String
 )
@@ -42,15 +37,28 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
             if (body != null) {
                 Resource.Success(body)
             } else {
-                Resource.Error("Response body is null")
+                Resource.Error("Response body is null", response.code())
             }
         } else {
-            val errorResponse = response.errorBody()?.string()?.let {
-                kotlinx.serialization.json.Json.decodeFromString<ErrorResponse1>(it)
+            Log.d("TAG", "safeApiCall: ${response}")
+            Log.d("TAG", "safeApiCall: ${response.code()}")
+            when (response.code()) {
+                401 -> {
+                    //onLogout()
+                    Resource.Error("Unauthorized. Please check your credentials.", 401)
+                }
+
+                502 -> Resource.Error("Bad Gateway. Server is unavailable at the moment.", 502)
+                else -> {
+                    val errorResponse = response.errorBody()?.string()?.let {
+                        kotlinx.serialization.json.Json.decodeFromString<ErrorResponse>(it)
+                    }
+                    Resource.Error(
+                        errorResponse?.message ?: "An unknown error occurred",
+                        response.code()
+                    )
+                }
             }
-            Resource.Error(
-                errorResponse?.message ?: "An unknown error occurred"
-            )
         }
     } catch (e: IOException) {
         Log.d("TAG", "safeApiCall: ${e}")
@@ -65,3 +73,14 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
         Resource.Error(e.message ?: "An unknown error occurred")
     }
 }
+
+
+
+
+
+
+
+
+
+
+

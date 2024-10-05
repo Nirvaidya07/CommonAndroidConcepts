@@ -7,8 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.nirali.auth_design.presentation.screens.LoginField
 import com.nirali.expensetracker.core.presentation.home.screens.HomeScreen
-import com.nirali.interview_api_call.presentation.login.NewScreen
-import com.nirali.interview_api_call.presentation.login.viewmodel.NewsViewModel
+import com.nirali.restApi.presentation.login.NewScreen
 import com.nirali.sample.recipe.screeen.RecipeScreen
 
 @Composable
@@ -21,7 +20,7 @@ fun AppNavigation(innerPadding: PaddingValues) {
         {
             LoginField(navController)
         }
-        composable(Routes.Home.route) { backStackEntry ->
+        composable(Routes.Home.route) {
             HomeScreen(navController)
 
         }

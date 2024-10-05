@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.nirali.interview"
+    namespace = "com.nirali"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.nirali.interview"
+        applicationId = "com.nirali"
         minSdk = 34
         targetSdk = 34
         versionCode = 1
@@ -140,7 +140,7 @@ dependencies {
 //    implementation("com.google.dagger:hilt-android:2.51.1")
 //    ksp("com.google.dagger:dagger-compiler:2.51.1")
 //    ksp("com.google.dagger:hilt-compiler:2.51.1")
-
+    implementation("eu.bambooapps:compose-material3-pullrefresh:1.0.0")
 
 
 }
