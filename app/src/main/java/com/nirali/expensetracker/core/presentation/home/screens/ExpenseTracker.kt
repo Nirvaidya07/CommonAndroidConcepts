@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,6 +46,7 @@ import com.nirali.expensetracker.core.presentation.home.viewmodel.HomeViewmodel
 fun ExpenseTrackerModel(viewModel: HomeViewmodel, onClosed: () -> Unit = {}) {
     var expenseTitle by remember { mutableStateOf("") }
     var amount by remember { mutableDoubleStateOf(0.0) }
+    val keyboardController = LocalSoftwareKeyboardController.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +129,8 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    placeholder: String? = null
+    placeholder: String? = null,
+    keyboardType: KeyboardType = KeyboardType.Text
 
 ) {
 
@@ -151,7 +159,13 @@ fun CustomTextField(
         ),
         shape = RoundedCornerShape(10.dp),
         singleLine = true,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Next,
+            keyboardType = keyboardType
+
+        ),
     )
+
 
 }

@@ -142,5 +142,13 @@ dependencies {
 //    ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation("eu.bambooapps:compose-material3-pullrefresh:1.0.0")
 
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation ("androidx.security:security-crypto:1.1.0-alpha03")
+
+    // pagingVersion = 3.2.0-alpha06
+    implementation ("androidx.paging:paging-runtime: 3.2.0-alpha06")
+    implementation ("androidx.paging:paging-compose:1.0.0-alpha20")
+
 
 }

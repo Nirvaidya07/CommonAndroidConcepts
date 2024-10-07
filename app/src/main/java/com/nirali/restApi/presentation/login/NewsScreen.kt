@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.nirali.auth_design.presentation.screens.backgroundTask1
 import com.nirali.restApi.domain.model.Article
@@ -32,12 +35,13 @@ import com.nirali.restApi.presentation.login.viewmodel.NewsViewModel
 
 @Preview
 @Composable
-fun NewScreen(innerPadding: PaddingValues,newsViewModel: NewsViewModel=hiltViewModel()) {
-    val newsState by newsViewModel.newsState.collectAsState()
-
+fun NewScreen(innerPadding: PaddingValues, newsViewModel: NewsViewModel = hiltViewModel()) {
+//    val newsState by newsViewModel.newsState.collectAsState()
+    val newsItems =
+        newsViewModel.getpagingNews(NewsModel("us", "business", 1)).collectAsLazyPagingItems()
     LaunchedEffect(key1 = Unit) {
-        backgroundTask1()
-        newsViewModel.getTrendingNews(NewsModel("us", "business", 1))
+        // backgroundTask1()
+        //newsViewModel.getpagingNews(NewsModel("us", "business", 1))
     }
 
     Box(
@@ -45,32 +49,62 @@ fun NewScreen(innerPadding: PaddingValues,newsViewModel: NewsViewModel=hiltViewM
             .fillMaxSize()
             .padding(innerPadding)
     ) {
-        newsState?.let { state ->
-            when {
-                state.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
 
-                state.error.isNotEmpty() -> {
-                    Text(
-                        text = "Error", modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(10.dp)
-                    )
-                }
+        when (newsItems.loadState.refresh) {
+            LoadState.Loading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-                state.news.isNotEmpty() -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(state.news)
-                        {
-                            NewsItem(it)
+//            LoadState.Error -> {
+//                Text(
+//                    text = "Error", modifier = Modifier
+//                        .align(Alignment.Center)
+//                        .padding(10.dp)
+//                )
+//            }
+
+            else ->
+//                    {newsItems.a.isNotEmpty() -> {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(newsItems.itemCount)
+                    { index ->
+                        val article = newsItems[index]
+                        if (article != null) {
+                            //NewsItem(article)
                         }
-
                     }
 
+                    //  }
 
+                    // Check if we can load more items
+                    if (newsItems.loadState.append is LoadState.Loading) {
+                        item {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    } else if (newsItems.loadState.append is LoadState.Error) {
+                        item {
+                            Text(
+                                text = "Error loading more news",
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                    // Custom "Load More" Button (if needed)
+                    if (newsItems.loadState.append.endOfPaginationReached) {
+                        item {
+                            Text(
+                                "No more items to load",
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    } else {
+                        item {
+                            Button(onClick = { newsItems.retry() }) {
+                                Text("Load More")
+                            }
+                        }
+                    }
                 }
-            }
         }
 
 

@@ -12,6 +12,7 @@ interface ApiService {
     suspend fun getTrendingListAnime(
         @Query("country") country: String = "us",
         @Query("category") category: String="business",
+        @Query("page") page: Int = 1,
         @Query("apiKey") apiKey: String = API_KEY
     ): Response<NewsResponse>
 }

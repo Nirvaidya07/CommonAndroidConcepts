@@ -33,6 +33,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,45 +50,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.nirali.sample.recipe.components.CustomText
 import com.nirali.sample.recipe.domain.model.Data
-import com.nirali.sample.recipe.viewmodel.DogViewmodel
+import com.nirali.sample.recipe.viewmodel.DogState
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
-import eu.bambooapps.material3.pullrefresh.PullRefreshIndicatorColors
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicatorDefaults
 import eu.bambooapps.material3.pullrefresh.pullRefresh
 import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
 
 @Preview
 @Composable
-fun RecipeScreen() {
-    RecipeState()
+fun RecipeScreen(
+    dogState: State<DogState>,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
+) {
+    RecipeState(dogState, isRefreshing, onRefresh)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeState(
-    dogViewmodel: DogViewmodel = hiltViewModel()
-) {
+fun RecipeState(dogState: State<DogState>, isRefreshing: Boolean, onRefresh: () -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val dogState by dogViewmodel.dogState.collectAsStateWithLifecycle()
 
-    val isRefreshing by dogViewmodel.isRefreshing.collectAsState()
+    //val isRefreshing by dogViewmodel.isRefreshing.collectAsState()
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
-            dogViewmodel.getBreeds()
+            onRefresh()
         }
     )
 
     LaunchedEffect(Unit) {
-        dogViewmodel.getBreeds()
-
+        onRefresh()
     }
 
     Scaffold(
@@ -181,7 +180,7 @@ fun RecipeState(
 
                 dogState.let {
                     when {
-                        it.isLoading -> {
+                        it.value.isLoading -> {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .size(50.dp)
@@ -189,7 +188,7 @@ fun RecipeState(
                             )
                         }
 
-                        it.isError -> {
+                        it.value.isError -> {
                             Text(
                                 text = "Error", modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
@@ -197,13 +196,14 @@ fun RecipeState(
                             )
                         }
 
-                        it.breedList?.data?.isNotEmpty() == true -> {
+                        it.value.breedList?.data?.isNotEmpty() == true -> {
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
 
                             ) {
-                                items(it.breedList.data)
+                                val list = it.value.breedList?.data ?: emptyList()
+                                items(list)
                                 { item ->
                                     DataItem(item)
                                 }

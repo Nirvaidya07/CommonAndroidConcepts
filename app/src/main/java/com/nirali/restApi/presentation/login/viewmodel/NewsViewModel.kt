@@ -11,12 +11,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.nirali.restApi.data.remote.NewsPagingSource
+import com.nirali.restApi.data.remote.RetrofitInstance
 import com.nirali.restApi.domain.model.Article
 import com.nirali.restApi.domain.model.NewsModel
 import com.nirali.restApi.domain.repository.NewsRepository
 import com.nirali.restApi.domain.utils.Resource
 import com.nirali.restApi.presentation.login.NewsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +40,7 @@ class NewsViewModel @Inject constructor(
     val newsState: StateFlow<NewsState?> = _newsState.asStateFlow()
 
     init {
-        getLocalNews()
+        //getLocalNews()
     }
 
     fun getTrendingNews(newsModel: NewsModel) {
@@ -71,6 +78,15 @@ class NewsViewModel @Inject constructor(
 
         }
     }
+
+    fun getpagingNews(newsModel: NewsModel): Flow<PagingData<Article>> {
+        return Pager(
+            config = PagingConfig(pageSize = 50, prefetchDistance = 50, enablePlaceholders = false),
+            pagingSourceFactory = { NewsPagingSource(repository, newsModel.country, newsModel.category) }
+        ).flow
+            .cachedIn(viewModelScope)
+    }
+
 
     fun saveNews(article: Article) {
         viewModelScope.launch {

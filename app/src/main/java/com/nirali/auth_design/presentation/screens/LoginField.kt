@@ -1,5 +1,6 @@
 package com.nirali.auth_design.presentation.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,14 +44,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.nirali.auth_design.data.datastore.SecurePreferences
+import com.nirali.auth_design.data.datastore.UserDataStore
+import com.nirali.auth_design.presentation.lengthOfLongestSubstring
 import com.nirali.auth_design.presentation.navigation.Routes
 
 @Preview
 @Composable
-fun LoginField(navController: NavController) {
+fun LoginField(onLogin: () -> Unit) {
     var inputText by remember { mutableStateOf("") }
     var inputPassword by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val userDataStore = UserDataStore(context)
+    val securePreferences = SecurePreferences(context)
+
+
+    LaunchedEffect(Unit) {
+        userDataStore.username.collect { email ->
+            username = email ?: ""
+        }
+    }
+    password = securePreferences.getPassword() ?: ""
 
     Surface {
         Column(
@@ -59,6 +76,22 @@ fun LoginField(navController: NavController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val sampleString = "abcabcbb"
+            val lengthOfLongestSubstring = sampleString.lengthOfLongestSubstring()
+            println(lengthOfLongestSubstring)
+            val list = listOf<Int>(1, 2, 3, 4, 5,6,7,8,9,10)
+            var evenList = list.filter { it % 2 == 0 }
+            println ("Even numbers are $evenList")
+            var double = evenList.map { e -> e * 2 }
+            println ("Sum of even numbers doubled is $double")
+            var sum = double.reduce { acc, i ->
+                println ("acc $acc i $i")
+                acc + i
+
+            }
+
+            println ("Sum of even numbers doubled is $sum")
+
             LoginInputTextField(
                 inputText,
                 onValueChange = {
@@ -75,7 +108,7 @@ fun LoginField(navController: NavController) {
             PasswordInputTextField(
                 inputPassword,
                 onValueChange = {
-                    inputPassword=it
+                    inputPassword = it
                 },
                 submit = { Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show() },
                 modifier = Modifier
@@ -85,9 +118,24 @@ fun LoginField(navController: NavController) {
                 placeholder = "Enter your password"
             )
 
-            Button(onClick = {
-                navController.navigate(Routes.Home.route )
-            }, modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+            Button(
+                onClick = {
+                    Log.d(
+                        "TAG",
+                        "LoginField: ${username} ${password}  req ${inputText} ${inputPassword}"
+                    )
+                    if (inputText == username && inputPassword == password) {
+                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                        onLogin()
+                    } else {
+                        Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
+                    }
+
+
+                }, modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
 
                 Text(text = "Submit")
             }

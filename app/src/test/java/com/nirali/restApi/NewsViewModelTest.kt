@@ -84,7 +84,7 @@ class NewsViewModelTest {
         // Act and Assert using Turbine for flow testing
         viewModel.newsState.test {
             // Trigger the ViewModel method
-            viewModel.getTrendingNews(NewsModel("us", "", 1))
+            viewModel.getpagingNews(NewsModel("us", "", 1))
 
             // Assert that the state has loading = true initially
             assert(awaitItem()?.isLoading == true)

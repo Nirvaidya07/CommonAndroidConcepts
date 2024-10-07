@@ -4,6 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
+import com.nirali.auth_design.data.datastore.SecurePreferences
+import com.nirali.auth_design.data.datastore.UserDataStore
+import com.nirali.auth_design.data.room.UserDao
+import com.nirali.auth_design.data.room.UserDatabase
 import com.nirali.expensetracker.core.data.repository.ExpenseCategoryRepositoryImpl
 import com.nirali.expensetracker.core.data.room.dao.ExpenseDao
 import com.nirali.expensetracker.core.data.room.database.ExpenseTrackerAppDatabase
@@ -64,6 +68,7 @@ object AppModule {
             "news_db"
         ).build()
     }
+
     @Provides
     @Singleton
     fun provideApiService(): ApiService {
@@ -73,7 +78,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideNewsRepository(apiService: ApiService, newsDao: NewsDao): NewsRepository {
-        return NewsRepositoryImpl(apiService,newsDao)
+        return NewsRepositoryImpl(apiService, newsDao)
     }
 
 
@@ -82,5 +87,35 @@ object AppModule {
     fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager {
         return context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
+
+    @Singleton
+    @Provides
+    fun provideUserDao(database: UserDatabase): UserDao {
+        return database.userDao
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDatabase(@ApplicationContext applicationContext: Context): UserDatabase {
+        return Room.databaseBuilder(
+            applicationContext,
+            UserDatabase::class.java,
+            "user_db"
+        ).build()
+
+    }
+
+    @Singleton
+    @Provides
+    fun provideSecurePreferences(@ApplicationContext applicationContext: Context): SecurePreferences {
+        return SecurePreferences(applicationContext)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDataStore(@ApplicationContext applicationContext: Context): UserDataStore {
+        return UserDataStore(applicationContext)
+    }
+
 
 }

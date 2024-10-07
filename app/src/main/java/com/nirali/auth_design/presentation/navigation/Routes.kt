@@ -14,4 +14,7 @@ sealed class Routes(val route: String, val title: String? = null, val icon: Imag
      object Search : Routes(route = "search_screen",title = "Search", icon = Icons.Default.Search)
      object Setting : Routes(route = "setting_screen",title = "Settings", icon = Icons.Default.Settings)
      object Recipe :Routes(route = "recipe_screen")
+     object Registration : Routes(route = "registration_screen")
+     object StateScreen : Routes(route = "state_screen")
+
 }

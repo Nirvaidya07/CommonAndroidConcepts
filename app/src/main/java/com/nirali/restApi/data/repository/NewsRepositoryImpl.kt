@@ -27,6 +27,7 @@ class NewsRepositoryImpl(private val api: ApiService, private val newsDao: NewsD
             api.getTrendingListAnime(
                 newsModel.country,
                 newsModel.category,
+                newsModel.page,
                 API_KEY
             )
         }

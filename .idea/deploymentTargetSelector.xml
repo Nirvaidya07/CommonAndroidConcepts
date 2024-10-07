@@ -13,12 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="NewScreen">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="ExpenseTrackerModel">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="RecipeScreen">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-10-05T02:28:50.630734Z">
@@ -29,6 +23,9 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="RegistrationMain">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>
